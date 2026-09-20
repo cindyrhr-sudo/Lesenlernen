@@ -248,19 +248,20 @@
         "od", "ud", "ak", "ok", "uk", "ek"
       ],
       level4: [
-        "lam", "mal", "man", "tam", "mat", "pan", "nap", "kan", "nak", "sar",
+         "lam", "mal", "man", "tam", "mat", "pan", "nap", "kan", "nak", "sar",
         "ras", "ram", "mar", "tan", "nat", "sal", "las", "mop", "pom", "rot",
         "tor", "min", "nim", "sen", "nes", "ren", "ner", "ler", "rel", "ter",
         "ret", "dem", "med", "sam", "lip", "pil", "pam", "map", "ton", "not", 
-        "den", "ned", "dor", "rod", "sur", "rus", "tus", "sut"
+        "den", "ned", "dor", "rad", "sur", "rus", "tus", "sum", "das", "des", "dem",
+        "die"
       ],
       level5: [
-        "Mop", "Arm", "Mut", "Ton", "Kamm", "Pass", "Rot", "Dom", "Kuss", "Ruck", 
-        "Tor", "Tee", "See", "Rast", "Mund", "Kind", "Pate", "Darm", "Mal", "Samt", 
-        "Pott", "Land", "Dank", "Puls", "Moor", "Lied", "Kern", "Dorn"
+       "Mop", "Arm", "Mut", "Ton", "Kamm", "Pass", "Rot", "Dom", "Kuss", "Park", 
+        "Tor", "Tee", "See", "Rast", "Mund", "Kind", "Pate", "Amt", "Mal", "Samt", 
+        "Pott", "Land", "Dank", "Puls", "Moor", "Lied", "Kern", "Dorn", "Mars", "Rind"
       ],
       level6: [
-        { word: "Lama", syls: ["La", "ma"] },
+         { word: "Lama", syls: ["La", "ma"] },
         { word: "Oma", syls: ["O", "ma"] },
         { word: "Opa", syls: ["O", "pa"] },
         { word: "Dino", syls: ["Di", "no"] },
@@ -287,8 +288,8 @@
         { word: "Tante", syls: ["Tan", "te"] },
         { word: "Paket", syls: ["Pa", "ket"] },
         { word: "Puppe", syls: ["Pup", "pe"] },
-        { word: "Melone", syls: ["Me", "lo", "ne"] },
-        { word: "Tomate", syls: ["To", "ma", "te"] }
+        { word: "Mandel", syls: ["Man", "del"] },
+        { word: "Platte", syls: ["Plat", "te"] }
       ]
     };
 
@@ -415,27 +416,29 @@
       return true;
     }
 
+    // Fisher-Yates Shuffle - liefert eine neu gemischte Kopie des Arrays,
+    // damit beim "Ziehen ohne Zurücklegen" keine Karte doppelt vorkommt.
+    function shuffleArray(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
     function getDataForCurrentLevel() {
-      let pool = [];
       let key = 'level' + currentLevel;
 
       if (currentLevel >= 1 && currentLevel <= 5) {
-        pool = SYLLABLE_DATABASE[key].filter(isSyllableValid);
-        let result = [];
-        for (let i = 0; i < cardCount; i++) {
-          if (pool.length > 0) result.push({ type: 'simple', text: pool[Math.floor(Math.random() * pool.length)] });
-        }
-        return result;
+        const pool = shuffleArray(SYLLABLE_DATABASE[key].filter(isSyllableValid));
+        // Falls weniger gültige Silben vorhanden sind als Kartenanzahl,
+        // werden einfach nur so viele Karten gezeigt wie möglich (weiterhin
+        // ohne Dopplungen).
+        return pool.slice(0, cardCount).map(text => ({ type: 'simple', text }));
       } else if (currentLevel === 6) {
-        const validWords = SYLLABLE_DATABASE.level6.filter(item => isSyllableValid(item.word));
-        let result = [];
-        for (let i = 0; i < cardCount; i++) {
-          if (validWords.length > 0) {
-            const chosen = validWords[Math.floor(Math.random() * validWords.length)];
-            result.push({ type: 'colored', syls: chosen.syls });
-          }
-        }
-        return result;
+        const validWords = shuffleArray(SYLLABLE_DATABASE.level6.filter(item => isSyllableValid(item.word)));
+        return validWords.slice(0, cardCount).map(item => ({ type: 'colored', syls: item.syls }));
       }
       return [];
     }
