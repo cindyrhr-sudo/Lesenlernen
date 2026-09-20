@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesespiel - Silben & Wörter</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&family=Edu+SA+Beginner:wght@500;700&family=Fredoka:wght@500;600;700&family=Playwrite+DE+Grund:wght@100..400&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7f6;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+
+    .subtitle {
+      color: #7f8c8d;
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .settings-toggle-btn {
+      width: 100%;
+      background-color: #f8f9fa;
+      color: #2c3e50;
+      border: 1px solid #dcdfe6;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .settings-toggle-btn:hover {
+      background-color: #eef2f5;
+      border-color: #cbd5e1;
+    }
+
+    .settings-section {
+      display: none;
+      background-color: #fafbfc;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 20px;
+    }
+
+    .settings-section.open {
+      display: block;
+    }
+
+    .setting-group {
+      margin-bottom: 15px;
+    }
+
+    .setting-group label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+      color: #34495e;
+      font-size: 14px;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      background-color: #fff;
+    }
+
+    .audio-status {
+      font-size: 14px;
+      color: #2980b9;
+      margin-top: 8px;
+      min-height: 22px;
+      font-weight: 600;
+    }
+
+    .progression-box {
+      background-color: #eaf2f8;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border-left: 4px solid #3498db;
+      margin-bottom: 15px;
+    }
+
+    .letters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .letter-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e0e0e0;
+      border-radius: 6px;
+      padding: 6px 2px;
+      cursor: pointer;
+      user-select: none;
+      font-weight: bold;
+      font-size: 13px;
+      transition: background-color 0.15s;
+    }
+
+    .letter-btn.active {
+      background: #3498db;
+      color: white;
+    }
+
+    .letter-btn input {
+      display: none;
+    }
+
+    .game-area {
+      text-align: center;
+      padding-top: 10px;
+    }
+
+    .control-btn {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      margin: 10px 8px;
+      transition: background 0.2s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 56px;
+      min-height: 52px;
+    }
+
+    .control-btn:hover {
+      background-color: #2980b9;
+      transform: translateY(-1px);
+    }
+
+    .audio-btn {
+      background-color: #2ecc71;
+    }
+
+    .audio-btn:hover {
+      background-color: #27ae60;
+    }
+
+    .cards-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      min-width: 140px;
+      height: 110px;
+      padding: 10px 18px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      font-weight: bold;
+      color: #2c3e50;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+      transition: transform 0.15s, box-shadow 0.15s;
+      letter-spacing: 2px;
+      font-family: 'Playwrite DE Grund', cursive, sans-serif;
+    }
+
+    .font-andika { font-family: 'Andika', sans-serif; }
+    .font-grundschrift { font-family: 'Playwrite DE Grund', cursive, sans-serif; }
+    .font-handwriting { font-family: 'Edu SA Beginner', cursive; }
+    .font-rounded { font-family: 'Fredoka', sans-serif; }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.18);
+    }
+
+    .card-0 { background-color: #ffadad; }
+    .card-1 { background-color: #ffd6a5; }
+    .card-2 { background-color: #caffbf; }
+
+    .feedback {
+      margin-top: 15px;
+      font-size: 36px;
+      font-weight: bold;
+      min-height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Lesespiel</h1>
+  <p class="subtitle">Silben & Wörter schrittweise lesen lernen</p>
+
+  <button type="button" class="settings-toggle-btn" onclick="toggleSettings()">
+    <span>⚙️ Einstellungen</span>
+    <span id="settings-toggle-icon">▼</span>
+  </button>
+
+  <div class="settings-section" id="settings-section">
+
+    <div class="setting-group">
+      <label for="mode-select">Spielmodus:</label>
+      <select id="mode-select" onchange="startNewRound()">
+        <option value="child" selected>Kindermodus (mit Audio-Ausgabe)</option>
+        <option value="teacher">Lehrermodus (ohne Audio, nur Anzeigekarten)</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <label for="level-select">Level / Schwierigkeit:</label>
+      <select id="level-select" onchange="startNewRound()">
+        <option value="1" selected>Level 1: 1 Silbe (2 Laute, z.B. MA, LA, MO)</option>
+        <option value="2">Level 2: 1 Silbe (3 Laute, z.B. LAM, POS, MAL)</option>
+        <option value="3">Level 3: 1-silbiges Wort (z.B. MUT, ROT, SEE)</option>
+        <option value="4">Level 4: 2-silbiges Wort (z.B. LAMA, NASE, ROSA)</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <label for="casing-select">Schreibweise der Karten:</label>
+      <select id="casing-select" onchange="startNewRound()">
+        <option value="title" selected>Erster Buchstabe groß (z.B. Ma, Lama)</option>
+        <option value="upper">Nur Großbuchstaben (z.B. MA, LAMA)</option>
+        <option value="lower">Nur Kleinschreibung (z.B. ma, lama)</option>
+        <option value="random">Zufällig gemischt</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <label for="font-select">Schriftart der Karten (Leseschrift):</label>
+      <select id="font-select" onchange="updateCardFonts()">
+        <option value="font-grundschrift" selected>✏️ Deutsche Grundschrift (Playwrite DE Grund)</option>
+        <option value="font-andika">📖 Druckschrift / Erstleseschrift (Andika)</option>
+        <option value="font-handwriting">✍️ Schul-Schreibschrift (Edu SA Beginner)</option>
+        <option value="font-rounded">🎈 Abgerundete Kinderschrift (Fredoka)</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <label for="engine-select">Sprachausgabe-Technologie:</label>
+      <select id="engine-select" onchange="toggleEngineUI(); startNewRound();">
+        <option value="gemini" selected>✨ Gemini KI-Stimme (Liest Silben perfekt & natürlich)</option>
+        <option value="webspeech">🔊 Browser-Sprachausgabe (mit Phonetik-Optimierung)</option>
+      </select>
+    </div>
+
+    <div class="setting-group" id="voice-group" style="display: none;">
+      <label for="voice-select">Browser-Stimme (Deutsch):</label>
+      <select id="voice-select" onchange="updateSelectedVoice()">
+        <option value="">Stimmen werden geladen...</option>
+      </select>
+    </div>
+
+    <div class="progression-box">
+      <div class="setting-group" style="margin-bottom: 0;">
+        <label for="progression-select">Gelernt bis Laut (Schnellauswahl):</label>
+        <select id="progression-select" onchange="applyProgression(this.value)">
+          <!-- Dynamic options populated via JavaScript -->
+        </select>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label>Aktive Laute / Buchstaben (Manuell anpassbar):</label>
+      <div class="letters-grid" id="letters-container"></div>
+    </div>
+  </div>
+
+  <div class="game-area">
+    <button class="control-btn" onclick="startNewRound()" title="Nächste Aufgabe" aria-label="Nächste Aufgabe">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14"/>
+        <path d="m12 5 7 7-7 7"/>
+      </svg>
+    </button>
+    <button id="repeat-audio-btn" class="control-btn audio-btn" onclick="playCurrentAudio()" title="Nochmals hören" aria-label="Nochmals hören">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+      </svg>
+    </button>
+
+    <div class="audio-status" id="audio-status"></div>
+    <div class="feedback" id="feedback-text"></div>
+
+    <div class="cards-container" id="cards-container"></div>
+  </div>
+</div>
+
+<script>
+  const ALL_LETTERS = ['M', 'A', 'L', 'O', 'E', 'I', 'S', 'T', 'R', 'U', 'N', 'P', 'K', 'D', 'G', 'B', 'F', 'W', 'H', 'Z', 'SCH', 'CH', 'AU', 'EI', 'EU'];
+
+  const PROGRESSION_STEPS = [
+    { label: 'Stufe 1: M, A, L, O', letters: ['M', 'A', 'L', 'O'] },
+    { label: 'Stufe 2: + E, I, S, T', letters: ['M', 'A', 'L', 'O', 'E', 'I', 'S', 'T'] },
+    { label: 'Stufe 3: + R, U, N, P', letters: ['M', 'A', 'L', 'O', 'E', 'I', 'S', 'T', 'R', 'U', 'N', 'P'] },
+    { label: 'Stufe 4: + K, D, G, B', letters: ['M', 'A', 'L', 'O', 'E', 'I', 'S', 'T', 'R', 'U', 'N', 'P', 'K', 'D', 'G', 'B'] },
+    { label: 'Stufe 5: + F, W, H, Z', letters: ['M', 'A', 'L', 'O', 'E', 'I', 'S', 'T', 'R', 'U', 'N', 'P', 'K', 'D', 'G', 'B', 'F', 'W', 'H', 'Z'] },
+    { label: 'Stufe 6: Alle Laute (+ SCH, CH, AU, EI, EU)', letters: ALL_LETTERS }
+  ];
+
+  const WORD_DATABASE_LEVEL3 = ['MUT', 'ROT', 'SEE', 'HOF', 'WAL', 'BÄR', 'RUF', 'PAS', 'TON', 'MET', 'SOH', 'MAL', 'PIN', 'PARK', 'TOR'];
+  const WORD_DATABASE_LEVEL4 = ['LAMA', 'NASE', 'ROSA', 'MAMA', 'PAPA', 'LIMA', 'OMA', 'OPA', 'SOFA', 'ROSE', 'LILA', 'EULI', 'SALAT', 'TOMATE', 'RITA', 'NINA'];
+
+  let currentTarget = "";
+  let currentOptions = [];
+  let availableVoices = [];
+  let selectedVoice = null;
+  let audioCache = new Map();
+  let currentAudioElement = null;
+
+  function getPhoneticGermanText(text) {
+    const t = text.toUpperCase().trim();
+
+    // Map KV combinations to elongated German vowel spellings to ensure smooth continuous pronunciation
+    const mapCV = {
+      'LA': 'laa', 'MA': 'maa', 'PA': 'paa', 'SA': 'saa', 'NA': 'naa', 'TA': 'taa', 'RA': 'raa', 'KA': 'kaa', 'DA': 'daa',
+      'LO': 'loo', 'MO': 'moo', 'PO': 'poo', 'SO': 'soo', 'NO': 'noo', 'TO': 'too', 'RO': 'roo', 'KO': 'koo', 'DO': 'doo',
+      'LE': 'lee', 'ME': 'mee', 'PE': 'pee', 'SE': 'see', 'NE': 'nee', 'TE': 'tee', 'RE': 'ree', 'KE': 'kee', 'DE': 'dee',
+      'LI': 'lie', 'MI': 'mie', 'PI': 'pie', 'SI': 'sie', 'NI': 'nie', 'TI': 'tie', 'RI': 'rie', 'KI': 'kie', 'DI': 'die',
+      'LU': 'luu', 'MU': 'muu', 'PU': 'puu', 'SU': 'suu', 'NU': 'nuu', 'TU': 'tuu', 'RU': 'ruu', 'KU': 'kuu', 'DU': 'duu'
+    };
+
+    if (mapCV[t]) {
+      return mapCV[t];
+    }
+
+    if (/^[BCDFGHJKLMNPQRSTVWXYZ][AEIOU]$/.test(t)) {
+      const c = t.charAt(0).toLowerCase();
+      const v = t.charAt(1).toLowerCase();
+      return c + v + v;
+    }
+
+    if (/^[BCDFGHJKLMNPQRSTVWXYZ][AEIOU][BCDFGHJKLMNPQRSTVWXYZ]$/.test(t)) {
+      const c1 = t.charAt(0).toLowerCase();
+      const v = t.charAt(1).toLowerCase();
+      const c2 = t.charAt(2).toLowerCase();
+      return c1 + v + c2 + c2;
+    }
+
+    return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+  }
+
+  function pcmToWav(pcmData, sampleRate = 24000) {
+    const numChannels = 1;
+    const sampleBits = 16;
+    const buffer = new ArrayBuffer(44 + pcmData.length * 2);
+    const view = new DataView(buffer);
+
+    function writeString(offset, string) {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    }
+
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + pcmData.length * 2, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * numChannels * (sampleBits / 8), true);
+    view.setUint16(32, numChannels * (sampleBits / 8), true);
+    view.setUint16(34, sampleBits, true);
+    writeString(36, 'data');
+    view.setUint32(40, pcmData.length * 2, true);
+
+    let offset = 44;
+    for (let i = 0; i < pcmData.length; i++, offset += 2) {
+      view.setInt16(offset, pcmData[i], true);
+    }
+
+    return new Blob([buffer], { type: 'audio/wav' });
+  }
+
+  function base64ToArrayBuffer(base64) {
+    const binaryString = window.atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+  }
+
+  async function playCurrentAudio() {
+    if (!currentTarget) return;
+
+    if (currentAudioElement) {
+      currentAudioElement.pause();
+      currentAudioElement = null;
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+
+    const mode = document.getElementById('mode-select').value;
+    if (mode === 'teacher') return;
+
+    const engineSelect = document.getElementById('engine-select');
+    const selectedEngine = engineSelect ? engineSelect.value : 'gemini';
+
+    if (selectedEngine === 'gemini') {
+      await playGeminiAudio(currentTarget);
+    } else {
+      playWebSpeechAudio(currentTarget);
+    }
+  }
+
+  async function playGeminiAudio(text) {
+    if (audioCache.has(text)) {
+      setAudioStatus("🔊 Spricht...");
+      const audioUrl = audioCache.get(text);
+      const audio = new Audio(audioUrl);
+      currentAudioElement = audio;
+      audio.onended = () => setAudioStatus("");
+      audio.onerror = () => setAudioStatus("");
+      audio.play();
+      return;
+    }
+
+    setAudioStatus("⏳ Lade KI-Stimme...");
+
+    try {
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+      const phoneticHint = getPhoneticGermanText(text);
+      const promptText = `Lies als freundliche deutsche Grundschullehrerin die Silbe "${text}" (ausgesprochen wie "${phoneticHint}") als ein einziges zusammenhängendes Wort vor. WICHTIGE REGEL: Buchstabiere NIEMALS ("nicht M-A") und lies es NIEMALS als Abkürzung oder auf Englisch vor.`;
+
+      const payload = {
+        contents: [{ parts: [{ text: promptText }] }],
+        generationConfig: {
+          responseModalities: ["AUDIO"],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: { voiceName: "Aoede" }
+            }
+          }
+        }
+      };
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+      const candidatePart = result?.candidates?.[0]?.content?.parts?.[0];
+      const audioDataBase64 = candidatePart?.inlineData?.data;
+      const mimeType = candidatePart?.inlineData?.mimeType;
+
+      if (audioDataBase64) {
+        let sampleRate = 24000;
+        if (mimeType && mimeType.includes('rate=')) {
+          const match = mimeType.match(/rate=(\d+)/);
+          if (match) sampleRate = parseInt(match[1], 10);
+        }
+
+        const pcmBuffer = base64ToArrayBuffer(audioDataBase64);
+        const pcm16Data = new Int16Array(pcmBuffer);
+        const wavBlob = pcmToWav(pcm16Data, sampleRate);
+        const audioUrl = URL.createObjectURL(wavBlob);
+
+        audioCache.set(text, audioUrl);
+
+        setAudioStatus("🔊 Spricht...");
+        const audio = new Audio(audioUrl);
+        currentAudioElement = audio;
+        audio.onended = () => setAudioStatus("");
+        audio.onerror = () => setAudioStatus("");
+        audio.play();
+      } else {
+        throw new Error("Kein Audio von KI-Dienst empfangen.");
+      }
+    } catch (err) {
+      console.warn("Gemini TTS Ausweichreaktion:", err);
+      playWebSpeechAudio(text);
+    }
+  }
+
+  function playWebSpeechAudio(text) {
+    if (!('speechSynthesis' in window)) {
+      setAudioStatus("Sprachausgabe im Browser nicht unterstützt.");
+      return;
+    }
+
+    setAudioStatus("🔊 Spricht (Browser)...");
+
+    setTimeout(() => {
+      const phoneticText = getPhoneticGermanText(text);
+      const utterance = new SpeechSynthesisUtterance(phoneticText);
+      utterance.lang = 'de-DE';
+
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+
+      utterance.rate = 0.7;
+
+      utterance.onend = () => setAudioStatus("");
+      utterance.onerror = () => setAudioStatus("");
+
+      window.speechSynthesis.speak(utterance);
+    }, 50);
+  }
+
+  function setAudioStatus(msg) {
+    document.getElementById('audio-status').innerText = msg;
+  }
+
+  function getActiveLetters() {
+    const checkboxes = document.querySelectorAll('.letter-checkbox');
+    const active = [];
+    checkboxes.forEach(cb => {
+      if (cb.checked) active.push(cb.value);
+    });
+    return active.length > 0 ? active : ['M', 'A', 'L', 'O'];
+  }
+
+  function formatTextCasing(text) {
+    const casing = document.getElementById('casing-select').value;
+    if (casing === 'upper') return text.toUpperCase();
+    if (casing === 'lower') return text.toLowerCase();
+    if (casing === 'title') return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    if (casing === 'random') {
+      return Math.random() > 0.5 ? text.toUpperCase() : text.toLowerCase();
+    }
+    return text;
+  }
+
+  function generateOptions() {
+    const level = document.getElementById('level-select').value;
+    const activeLetters = getActiveLetters();
+    const vowels = activeLetters.filter(l => ['A', 'O', 'E', 'I', 'U', 'Ä', 'Ö', 'Ü', 'AU', 'EI', 'EU'].includes(l));
+    const consonants = activeLetters.filter(l => !['A', 'O', 'E', 'I', 'U', 'Ä', 'Ö', 'Ü', 'AU', 'EI', 'EU'].includes(l));
+
+    const useVowels = vowels.length > 0 ? vowels : ['A', 'O'];
+    const useConsonants = consonants.length > 0 ? consonants : ['M', 'L'];
+
+    let items = [];
+
+    if (level === "1") {
+      for (let c of useConsonants) {
+        for (let v of useVowels) {
+          items.push(c + v);
+        }
+      }
+    } else if (level === "2") {
+      for (let c1 of useConsonants) {
+        for (let v of useVowels) {
+          for (let c2 of useConsonants) {
+            items.push(c1 + v + c2);
+          }
+        }
+      }
+    } else if (level === "3") {
+      items = WORD_DATABASE_LEVEL3;
+    } else if (level === "4") {
+      items = WORD_DATABASE_LEVEL4;
+    }
+
+    if (items.length < 3) {
+      items = ['MA', 'LA', 'MO', 'SO', 'TA', 'PA'];
+    }
+
+    // Pick 3 unique items
+    const shuffled = [...items].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 3);
+    currentTarget = selected[Math.floor(Math.random() * selected.length)];
+    currentOptions = selected;
+  }
+
+  function startNewRound() {
+    generateOptions();
+    document.getElementById('feedback-text').innerText = "";
+    
+    const repeatBtn = document.getElementById('repeat-audio-btn');
+    const mode = document.getElementById('mode-select').value;
+    if (mode === 'teacher') {
+      repeatBtn.style.display = 'none';
+      setAudioStatus("Lehrermodus: Lesen Sie das geforderte Wort laut vor.");
+    } else {
+      repeatBtn.style.display = 'inline-flex';
+      setAudioStatus("");
+      playCurrentAudio();
+    }
+
+    renderCards();
+  }
+
+  function renderCards() {
+    const container = document.getElementById('cards-container');
+    container.innerHTML = "";
+
+    const fontClass = document.getElementById('font-select').value;
+
+    currentOptions.forEach((opt, idx) => {
+      const card = document.createElement('div');
+      card.className = `card card-${idx} ${fontClass}`;
+      card.innerText = formatTextCasing(opt);
+      card.onclick = () => checkAnswer(opt);
+      container.appendChild(card);
+    });
+  }
+
+  function checkAnswer(selectedText) {
+    const mode = document.getElementById('mode-select').value;
+    const feedback = document.getElementById('feedback-text');
+
+    if (mode === 'teacher') {
+      feedback.style.color = "#2c3e50";
+      feedback.innerText = `Gelesen: "${formatTextCasing(selectedText)}"`;
+      return;
+    }
+
+    if (selectedText === currentTarget) {
+      feedback.style.color = "#27ae60";
+      feedback.innerText = "⭐ 🎉 ⭐";
+    } else {
+      feedback.style.color = "#e74c3c";
+      feedback.innerText = "❌";
+    }
+  }
+
+  function updateCardFonts() {
+    renderCards();
+  }
+
+  function toggleSettings() {
+    const section = document.getElementById('settings-section');
+    const icon = document.getElementById('settings-toggle-icon');
+    section.classList.toggle('open');
+    icon.innerText = section.classList.contains('open') ? '▲' : '▼';
+  }
+
+  function toggleEngineUI() {
+    const engine = document.getElementById('engine-select').value;
+    const voiceGroup = document.getElementById('voice-group');
+    if (engine === 'webspeech') {
+      voiceGroup.style.display = 'block';
+    } else {
+      voiceGroup.style.display = 'none';
+    }
+  }
+
+  function applyProgression(stepIdx) {
+    const step = PROGRESSION_STEPS[stepIdx];
+    if (!step) return;
+
+    const checkboxes = document.querySelectorAll('.letter-checkbox');
+    checkboxes.forEach(cb => {
+      cb.checked = step.letters.includes(cb.value);
+      const labelBtn = cb.closest('.letter-btn');
+      if (cb.checked) labelBtn.classList.add('active');
+      else labelBtn.classList.remove('active');
+    });
+
+    startNewRound();
+  }
+
+  function initUI() {
+    // Populate progression select
+    const progSelect = document.getElementById('progression-select');
+    progSelect.innerHTML = "";
+    PROGRESSION_STEPS.forEach((step, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx;
+      opt.innerText = step.label;
+      progSelect.appendChild(opt);
+    });
+
+    // Populate letter checkboxes grid
+    const lettersContainer = document.getElementById('letters-container');
+    lettersContainer.innerHTML = "";
+    ALL_LETTERS.forEach(l => {
+      const label = document.createElement('label');
+      label.className = `letter-btn ${['M', 'A', 'L', 'O'].includes(l) ? 'active' : ''}`;
+      
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.value = l;
+      cb.className = 'letter-checkbox';
+      cb.checked = ['M', 'A', 'L', 'O'].includes(l);
+      cb.onchange = () => {
+        if (cb.checked) label.classList.add('active');
+        else label.classList.remove('active');
+        startNewRound();
+      };
+
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(l));
+      lettersContainer.appendChild(label);
+    });
+  }
+
+  function initVoices() {
+    if (!('speechSynthesis' in window)) return;
+    
+    voices = window.speechSynthesis.getVoices();
+    availableVoices = voices.filter(v => v.lang.startsWith('de'));
+
+    const voiceSelect = document.getElementById('voice-select');
+    if (!voiceSelect) return;
+    voiceSelect.innerHTML = "";
+
+    if (availableVoices.length === 0) {
+      const opt = document.createElement('option');
+      opt.value = "";
+      opt.innerText = "Standard Deutsch (Browser)";
+      voiceSelect.appendChild(opt);
+      return;
+    }
+
+    availableVoices.forEach((v, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx;
+      opt.innerText = `${v.name} (${v.lang})`;
+      voiceSelect.appendChild(opt);
+    });
+
+    selectedVoice = availableVoices[0];
+  }
+
+  function updateSelectedVoice() {
+    const idx = document.getElementById('voice-select').value;
+    if (availableVoices[idx]) {
+      selectedVoice = availableVoices[idx];
+    }
+  }
+
+  window.onload = () => {
+    initUI();
+    initVoices();
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        initVoices();
+      };
+    }
+
+    startNewRound();
+  };
+</script>
+
+</body>
+</html>
