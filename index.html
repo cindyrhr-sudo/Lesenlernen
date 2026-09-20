@@ -1,801 +1,487 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="h-full bg-[#030704] text-emerald-100/50">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lesespiel - Silben & Wörter</title>
+  <title>Silben-Studio - Grundschul-Lesespiel</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Playwrite DE Grund (Echte deutsche Grundschrift) & Andika -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400&family=Playwrite+DE+Grund:wght@100..400&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            grundschrift: ['"Playwrite DE Grund"', 'Andika', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&family=Edu+SA+Beginner:wght@500;700&family=Fredoka:wght@500;600;700&family=Playwrite+DE+Grund:wght@100..400&display=swap');
-
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f7f6;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    h1 {
-      color: #2c3e50;
-      margin-bottom: 5px;
-      text-align: center;
-    }
-
-    .subtitle {
-      color: #7f8c8d;
-      margin-top: 0;
-      margin-bottom: 20px;
-      font-size: 14px;
-      text-align: center;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 650px;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-
-    .settings-toggle-btn {
-      width: 100%;
-      background-color: #f8f9fa;
-      color: #2c3e50;
-      border: 1px solid #dcdfe6;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      transition: background-color 0.2s, border-color 0.2s;
-    }
-
-    .settings-toggle-btn:hover {
-      background-color: #eef2f5;
-      border-color: #cbd5e1;
-    }
-
-    .settings-section {
-      display: none;
-      background-color: #fafbfc;
-      padding: 15px;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      margin-bottom: 20px;
-    }
-
-    .settings-section.open {
-      display: block;
-    }
-
-    .setting-group {
-      margin-bottom: 15px;
-    }
-
-    .setting-group label {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 5px;
-      color: #34495e;
-      font-size: 14px;
-    }
-
-    select {
-      width: 100%;
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      background-color: #fff;
-    }
-
-    .audio-status {
-      font-size: 14px;
-      color: #2980b9;
-      margin-top: 8px;
-      min-height: 22px;
-      font-weight: 600;
-    }
-
-    .progression-box {
-      background-color: #eaf2f8;
-      padding: 12px 15px;
-      border-radius: 8px;
-      border-left: 4px solid #3498db;
-      margin-bottom: 15px;
-    }
-
-    .letters-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
-      gap: 6px;
-      margin-top: 8px;
-    }
-
-    .letter-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #e0e0e0;
-      border-radius: 6px;
-      padding: 6px 2px;
-      cursor: pointer;
+      font-family: 'Andika', sans-serif;
       user-select: none;
-      font-weight: bold;
-      font-size: 13px;
-      transition: background-color 0.15s;
+      -webkit-user-select: none;
+      background-color: #030704;
     }
-
-    .letter-btn.active {
-      background: #3498db;
-      color: white;
+    .font-grundschrift {
+      font-family: 'Playwrite DE Grund', 'Andika', cursive, sans-serif;
+      font-weight: 400;
     }
-
-    .letter-btn input {
-      display: none;
+    
+    /* 3D Flip Animationen */
+    .syllable-card {
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+      transform-style: preserve-3d;
     }
-
-    .game-area {
-      text-align: center;
-      padding-top: 10px;
+    .flip-out {
+      transform: rotateY(90deg) scale(0.95);
+      opacity: 0;
     }
-
-    .control-btn {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 10px 22px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 12px;
-      cursor: pointer;
-      margin: 10px 8px;
-      transition: background 0.2s, transform 0.1s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      min-width: 56px;
-      min-height: 52px;
-    }
-
-    .control-btn:hover {
-      background-color: #2980b9;
-      transform: translateY(-1px);
-    }
-
-    .audio-btn {
-      background-color: #2ecc71;
-    }
-
-    .audio-btn:hover {
-      background-color: #27ae60;
-    }
-
-    .cards-container {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 25px;
-      flex-wrap: wrap;
-    }
-
-    .card {
-      min-width: 140px;
-      height: 110px;
-      padding: 10px 18px;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 38px;
-      font-weight: bold;
-      color: #2c3e50;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.12);
-      transition: transform 0.15s, box-shadow 0.15s;
-      letter-spacing: 2px;
-      font-family: 'Playwrite DE Grund', cursive, sans-serif;
-    }
-
-    .font-andika { font-family: 'Andika', sans-serif; }
-    .font-grundschrift { font-family: 'Playwrite DE Grund', cursive, sans-serif; }
-    .font-handwriting { font-family: 'Edu SA Beginner', cursive; }
-    .font-rounded { font-family: 'Fredoka', sans-serif; }
-
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.18);
-    }
-
-    .card-0 { background-color: #ffadad; }
-    .card-1 { background-color: #ffd6a5; }
-    .card-2 { background-color: #caffbf; }
-
-    .feedback {
-      margin-top: 15px;
-      font-size: 36px;
-      font-weight: bold;
-      min-height: 45px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .flip-in {
+      transform: rotateY(0deg) scale(1);
+      opacity: 1;
     }
   </style>
 </head>
-<body>
+<body class="h-full flex flex-col justify-between min-h-screen">
 
-<div class="container">
-  <h1>Lesespiel</h1>
-  <p class="subtitle">Silben & Wörter schrittweise lesen lernen</p>
-
-  <button type="button" class="settings-toggle-btn" onclick="toggleSettings()">
-    <span>⚙️ Einstellungen</span>
-    <span id="settings-toggle-icon">▼</span>
-  </button>
-
-  <div class="settings-section" id="settings-section">
-
-    <div class="setting-group">
-      <label for="mode-select">Spielmodus:</label>
-      <select id="mode-select" onchange="startNewRound()">
-        <option value="child" selected>Kindermodus (mit Audio-Ausgabe)</option>
-        <option value="teacher">Lehrermodus (ohne Audio, nur Anzeigekarten)</option>
-      </select>
-    </div>
-
-    <div class="setting-group">
-      <label for="level-select">Level / Schwierigkeit:</label>
-      <select id="level-select" onchange="startNewRound()">
-        <option value="1" selected>Level 1: 1 Silbe (2 Laute, z.B. MA, LA, MO)</option>
-        <option value="2">Level 2: 1 Silbe (3 Laute, z.B. LAM, POS, MAL)</option>
-        <option value="3">Level 3: 1-silbiges Wort (z.B. MUT, ROT, SEE)</option>
-        <option value="4">Level 4: 2-silbiges Wort (z.B. LAMA, NASE, ROSA)</option>
-      </select>
-    </div>
-
-    <div class="setting-group">
-      <label for="casing-select">Schreibweise der Karten:</label>
-      <select id="casing-select" onchange="startNewRound()">
-        <option value="title" selected>Erster Buchstabe groß (z.B. Ma, Lama)</option>
-        <option value="upper">Nur Großbuchstaben (z.B. MA, LAMA)</option>
-        <option value="lower">Nur Kleinschreibung (z.B. ma, lama)</option>
-        <option value="random">Zufällig gemischt</option>
-      </select>
-    </div>
-
-    <div class="setting-group">
-      <label for="font-select">Schriftart der Karten (Leseschrift):</label>
-      <select id="font-select" onchange="updateCardFonts()">
-        <option value="font-grundschrift" selected>✏️ Deutsche Grundschrift (Playwrite DE Grund)</option>
-        <option value="font-andika">📖 Druckschrift / Erstleseschrift (Andika)</option>
-        <option value="font-handwriting">✍️ Schul-Schreibschrift (Edu SA Beginner)</option>
-        <option value="font-rounded">🎈 Abgerundete Kinderschrift (Fredoka)</option>
-      </select>
-    </div>
-
-    <div class="setting-group">
-      <label for="engine-select">Sprachausgabe-Technologie:</label>
-      <select id="engine-select" onchange="toggleEngineUI(); startNewRound();">
-        <option value="gemini" selected>✨ Gemini KI-Stimme (Liest Silben perfekt & natürlich)</option>
-        <option value="webspeech">🔊 Browser-Sprachausgabe (mit Phonetik-Optimierung)</option>
-      </select>
-    </div>
-
-    <div class="setting-group" id="voice-group" style="display: none;">
-      <label for="voice-select">Browser-Stimme (Deutsch):</label>
-      <select id="voice-select" onchange="updateSelectedVoice()">
-        <option value="">Stimmen werden geladen...</option>
-      </select>
-    </div>
-
-    <div class="progression-box">
-      <div class="setting-group" style="margin-bottom: 0;">
-        <label for="progression-select">Gelernt bis Laut (Schnellauswahl):</label>
-        <select id="progression-select" onchange="applyProgression(this.value)">
-          <!-- Dynamic options populated via JavaScript -->
-        </select>
+  <!-- Header: Extrem dezent und unauffällig -->
+  <header class="bg-[#050c07]/50 border-b border-emerald-950/40 px-6 py-3 sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer opacity-70 hover:opacity-100 transition" onclick="showScreen('game')">
+        <div class="bg-emerald-950/40 text-emerald-200/50 w-8 h-8 rounded-lg flex items-center justify-center font-bold font-grundschrift text-sm border border-emerald-900/30">
+          Aa
+        </div>
+        <div>
+          <h1 class="text-sm font-bold text-emerald-200/50 font-grundschrift">
+            Silben-Studio
+          </h1>
+          <p class="text-[10px] text-emerald-400/30 font-medium">Grundschrift</p>
+        </div>
       </div>
+
+      <!-- Einstellungen Button extrem unauffällig -->
+      <button onclick="showScreen('teacher')" class="px-3 py-1.5 bg-[#07130a]/40 hover:bg-[#07130a] text-emerald-300/40 hover:text-emerald-300/80 rounded-lg text-xs transition border border-emerald-900/20 flex items-center gap-1.5">
+        ⚙️ <span class="hidden sm:inline">Lehrerbereich</span>
+      </button>
     </div>
+  </header>
 
-    <div class="setting-group">
-      <label>Aktive Laute / Buchstaben (Manuell anpassbar):</label>
-      <div class="letters-grid" id="letters-container"></div>
+  <!-- Main Container -->
+  <main class="flex-grow flex items-center justify-center p-4 sm:p-8">
+    <div class="w-full max-w-5xl">
+
+      <!-- ================= SCREEN 1: SPIELBEREICH ================= -->
+      <section id="screen-game" class="space-y-6">
+        
+        <!-- Status & Dezenter Weiter-Button -->
+        <div class="bg-[#050c07]/40 border border-emerald-950/30 rounded-2xl p-3 px-4 flex justify-between items-center shadow-sm">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 bg-emerald-950/30 text-emerald-300/40 font-medium rounded-lg text-xs border border-emerald-900/20" id="levelBadge">
+              Level 1: 2 Laute
+            </span>
+            <span class="text-[11px] text-emerald-500/30 font-medium hidden sm:inline" id="activeLettersCountInfo">
+              14 Laute aktiv
+            </span>
+          </div>
+
+          <!-- Weiter-Button: Unauffällig auf Beamer, gut bedienbar auf Tablet -->
+          <button onclick="nextSyllableSetWithAnimation()" class="px-5 py-2 bg-emerald-950/50 hover:bg-emerald-900/60 text-emerald-200/60 hover:text-emerald-200 font-medium rounded-xl text-xs transition flex items-center gap-2 border border-emerald-800/30 shadow-sm">
+            Nächste Karten ➔
+          </button>
+        </div>
+
+        <!-- Silbenkarten Grid (Karten selbst bleiben hell und kontrastreich für Kinder) -->
+        <div id="syllablesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-h-[320px] items-stretch">
+          <!-- Dynamisch erzeugte Grundschrift-Karten -->
+        </div>
+
+      </section>
+
+      <!-- ================= SCREEN 2: LEHRERBEREICH ================= -->
+      <section id="screen-teacher" class="hidden space-y-6 max-w-3xl mx-auto text-emerald-200/70">
+        <div class="flex justify-between items-center bg-[#050c07]/60 p-5 rounded-2xl border border-emerald-950/40 shadow-sm">
+          <div>
+            <h2 class="text-lg font-bold text-emerald-200/70">Lehrerbereich</h2>
+            <p class="text-emerald-400/40 text-xs">Einstellungen für den Unterricht</p>
+          </div>
+          <button onclick="showScreen('game')" class="px-4 py-2 bg-emerald-900/40 hover:bg-emerald-900 text-emerald-200 font-medium rounded-xl text-xs transition border border-emerald-700/40">
+            ✓ Fertig & Spielen
+          </button>
+        </div>
+
+        <!-- 1. Lautauswahl -->
+        <div class="bg-[#050c07]/40 border border-emerald-950/30 rounded-2xl p-5 space-y-3 shadow-sm">
+          <div class="flex justify-between items-center">
+            <h3 class="font-medium text-sm text-emerald-200/60">
+              🔤 Aktive Laute auswählen
+            </h3>
+            <div class="flex gap-2">
+              <button onclick="selectAllLetters(true)" class="text-[11px] px-2.5 py-1 bg-[#07130a] hover:bg-emerald-900/40 text-emerald-300/40 font-medium rounded-lg border border-emerald-900/20">Alle an</button>
+              <button onclick="selectAllLetters(false)" class="text-[11px] px-2.5 py-1 bg-[#07130a] hover:bg-emerald-900/40 text-emerald-300/40 font-medium rounded-lg border border-emerald-900/20">Alle aus</button>
+            </div>
+          </div>
+          <p class="text-[11px] text-emerald-500/30">
+            Reihenfolge nach Lehrwerk: <span class="font-mono text-emerald-300/40">l, a, m, o, p, e, s, n, i, t, r, k, d, u</span>
+          </p>
+
+          <div id="letterToggleContainer" class="flex flex-wrap gap-2 pt-1">
+            <!-- Dynamisch erzeugte Laut-Schalter -->
+          </div>
+        </div>
+
+        <!-- 2. Level Auswahl -->
+        <div class="bg-[#050c07]/40 border border-emerald-950/30 rounded-2xl p-5 space-y-3 shadow-sm">
+          <h3 class="font-medium text-sm text-emerald-200/60">📊 Schwierigkeitsstufe / Level</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <button onclick="setLevel(1)" id="levelBtn_1" class="p-3 rounded-xl border text-left transition flex flex-col justify-between text-xs">
+              <span class="font-medium block text-emerald-200/80">Level 1: 2 Laute</span>
+              <span class="text-[10px] text-emerald-500/40">Einfache Silben (z.B. la, mo, pe)</span>
+            </button>
+            <button onclick="setLevel(2)" id="levelBtn_2" class="p-3 rounded-xl border text-left transition flex flex-col justify-between text-xs">
+              <span class="font-medium block text-emerald-200/80">Level 2: 3 Laute</span>
+              <span class="text-[10px] text-emerald-500/40">Dreilaut-Silben (z.B. lam, pos)</span>
+            </button>
+            <button onclick="setLevel(3)" id="levelBtn_3" class="p-3 rounded-xl border text-left transition flex flex-col justify-between text-xs">
+              <span class="font-medium block text-emerald-200/80">Level 3: 1-silbige Wörter</span>
+              <span class="text-[10px] text-emerald-500/40">Echte Wörter (z.B. Mop, Arm, Mut)</span>
+            </button>
+            <button onclick="setLevel(4)" id="levelBtn_4" class="p-3 rounded-xl border text-left transition flex flex-col justify-between text-xs">
+              <span class="font-medium block text-emerald-200/80">Level 4: 2-silbige Wörter</span>
+              <span class="text-[10px] text-emerald-500/40">In Farbsilben (z.B. La-ma, Lu-pe)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Kartenanzahl -->
+        <div class="bg-[#050c07]/40 border border-emerald-950/30 rounded-2xl p-5 space-y-3 shadow-sm">
+          <h3 class="font-medium text-sm text-emerald-200/60">🎴 Anzahl der Silbenkarten</h3>
+          <div class="grid grid-cols-3 gap-2.5">
+            <button onclick="setCardCount(2)" id="cardCountBtn_2" class="py-2.5 rounded-xl border font-medium text-center transition text-xs">2 Karten</button>
+            <button onclick="setCardCount(3)" id="cardCountBtn_3" class="py-2.5 rounded-xl border font-medium text-center transition text-xs">3 Karten</button>
+            <button onclick="setCardCount(4)" id="cardCountBtn_4" class="py-2.5 rounded-xl border font-medium text-center transition text-xs">4 Karten</button>
+          </div>
+        </div>
+
+      </section>
+
     </div>
-  </div>
+  </main>
 
-  <div class="game-area">
-    <button class="control-btn" onclick="startNewRound()" title="Nächste Aufgabe" aria-label="Nächste Aufgabe">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 12h14"/>
-        <path d="m12 5 7 7-7 7"/>
-      </svg>
-    </button>
-    <button id="repeat-audio-btn" class="control-btn audio-btn" onclick="playCurrentAudio()" title="Nochmals hören" aria-label="Nochmals hören">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-      </svg>
-    </button>
+  <!-- Footer -->
+  <footer class="bg-[#050c07]/30 border-t border-emerald-950/20 p-2.5 text-center text-[10px] text-emerald-600/30 font-grundschrift">
+    Silben-Studio • Reizarmes Design in Grundschrift • 100% Offline-Fähig
+  </footer>
 
-    <div class="audio-status" id="audio-status"></div>
-    <div class="feedback" id="feedback-text"></div>
+  <script>
+    /* ================= LAUTE NACH LEHRWERK ================= */
+    const TEACHING_LETTERS = [
+      { id: 'l', label: 'L / l' },
+      { id: 'a', label: 'A / a' },
+      { id: 'm', label: 'M / m' },
+      { id: 'o', label: 'O / o' },
+      { id: 'p', label: 'P / p' },
+      { id: 'e', label: 'E / e' },
+      { id: 's', label: 'S / s' },
+      { id: 'n', label: 'N / n' },
+      { id: 'i', label: 'I / i' },
+      { id: 't', label: 'T / t' },
+      { id: 'r', label: 'R / r' },
+      { id: 'k', label: 'K / k' },
+      { id: 'd', label: 'D / d' },
+      { id: 'u', label: 'U / u' }
+    ];
 
-    <div class="cards-container" id="cards-container"></div>
-  </div>
-</div>
+    let activeLetters = new Set(['l', 'a', 'm', 'o', 'p', 'e', 's', 'n', 'i', 't', 'r', 'k', 'd', 'u']);
 
-<script>
-  const ALL_LETTERS = ['M', 'A', 'L', 'O', 'E', 'I', 'S', 'T', 'R', 'U', 'N', 'P', 'K', 'D', 'G', 'B', 'F', 'W', 'H', 'Z', 'SCH', 'CH', 'AU', 'EI', 'EU'];
-
-  const PROGRESSION_STEPS = [
-    { label: 'Stufe 1: M, A, L, O', letters: ['M', 'A', 'L', 'O'] },
-    { label: 'Stufe 2: + E, I, S, T', letters: ['M', 'A', 'L', 'O', 'E', 'I', 'S', 'T'] },
-    { label: 'Stufe 3: + R, U, N, P', letters: ['M', 'A', 'L', 'O', 'E', 'I', 'S', 'T', 'R', 'U', 'N', 'P'] },
-    { label: 'Stufe 4: + K, D, G, B', letters: ['M', 'A', 'L', 'O', 'E', 'I', 'S', 'T', 'R', 'U', 'N', 'P', 'K', 'D', 'G', 'B'] },
-    { label: 'Stufe 5: + F, W, H, Z', letters: ['M', 'A', 'L', 'O', 'E', 'I', 'S', 'T', 'R', 'U', 'N', 'P', 'K', 'D', 'G', 'B', 'F', 'W', 'H', 'Z'] },
-    { label: 'Stufe 6: Alle Laute (+ SCH, CH, AU, EI, EU)', letters: ALL_LETTERS }
-  ];
-
-  const WORD_DATABASE_LEVEL3 = ['MUT', 'ROT', 'SEE', 'HOF', 'WAL', 'BÄR', 'RUF', 'PAS', 'TON', 'MET', 'SOH', 'MAL', 'PIN', 'PARK', 'TOR'];
-  const WORD_DATABASE_LEVEL4 = ['LAMA', 'NASE', 'ROSA', 'MAMA', 'PAPA', 'LIMA', 'OMA', 'OPA', 'SOFA', 'ROSE', 'LILA', 'EULI', 'SALAT', 'TOMATE', 'RITA', 'NINA'];
-
-  let currentTarget = "";
-  let currentOptions = [];
-  let availableVoices = [];
-  let selectedVoice = null;
-  let audioCache = new Map();
-  let currentAudioElement = null;
-
-  function getPhoneticGermanText(text) {
-    const t = text.toUpperCase().trim();
-
-    // Map KV combinations to elongated German vowel spellings to ensure smooth continuous pronunciation
-    const mapCV = {
-      'LA': 'laa', 'MA': 'maa', 'PA': 'paa', 'SA': 'saa', 'NA': 'naa', 'TA': 'taa', 'RA': 'raa', 'KA': 'kaa', 'DA': 'daa',
-      'LO': 'loo', 'MO': 'moo', 'PO': 'poo', 'SO': 'soo', 'NO': 'noo', 'TO': 'too', 'RO': 'roo', 'KO': 'koo', 'DO': 'doo',
-      'LE': 'lee', 'ME': 'mee', 'PE': 'pee', 'SE': 'see', 'NE': 'nee', 'TE': 'tee', 'RE': 'ree', 'KE': 'kee', 'DE': 'dee',
-      'LI': 'lie', 'MI': 'mie', 'PI': 'pie', 'SI': 'sie', 'NI': 'nie', 'TI': 'tie', 'RI': 'rie', 'KI': 'kie', 'DI': 'die',
-      'LU': 'luu', 'MU': 'muu', 'PU': 'puu', 'SU': 'suu', 'NU': 'nuu', 'TU': 'tuu', 'RU': 'ruu', 'KU': 'kuu', 'DU': 'duu'
+    /* ================= SILBEN & WÖRTER DATENBANK ================= */
+    const SYLLABLE_DATABASE = {
+      level1: [
+        "la", "ma", "mo", "lo", "pe", "po", "so", "se", "na", "ne", "ni", "no", 
+        "ti", "to", "ta", "te", "ra", "ro", "re", "ri", "ka", "ko", "ke", "du", 
+        "da", "do", "de", "di", "lu", "mu", "pu", "su", "nu", "tu", "ru", "ku",
+        "al", "am", "an", "as", "at", "ar", "el", "em", "en", "es", "er", "in", "is", "it", "or", "um"
+      ],
+      level2: [
+        "lam", "mam", "pos", "ros", "man", "ter", "kam", "den", "min", "res", 
+        "pur", "lan", "mop", "rot", "kar", "kur", "sen", "sam", "tas",
+        "per", "mor", "lin", "ren", "dem", "aus"
+      ],
+      level3: [
+        "Mop", "Arm", "Mut", "Ton", "Ost", "Sohn", "Kamm", "Pass", "Ast", "Ohr",
+        "Rot", "Dom", "Kran", "Kuss", "Ruck", "Tor", "Tee", "See", "Rast", "Mund",
+        "Kind", "Pate", "Rost", "Dorn", "Korn", "Park"
+      ],
+      level4: [
+        { word: "Lama", syls: ["La", "ma"] },
+        { word: "Oma", syls: ["O", "ma"] },
+        { word: "Lupe", syls: ["Lu", "pe"] },
+        { word: "Rose", syls: ["Ro", "se"] },
+        { word: "Dose", syls: ["Do", "se"] },
+        { word: "Sonne", syls: ["Son", "ne"] },
+        { word: "Motor", syls: ["Mo", "tor"] },
+        { word: "Rakete", syls: ["Ra", "ke"] },
+        { word: "Kamel", syls: ["Ka", "mel"] },
+        { word: "Suppe", syls: ["Sup", "pe"] },
+        { word: "Tasse", syls: ["Tas", "se"] },
+        { word: "Karton", syls: ["Kar", "ton"] },
+        { word: "Kater", syls: ["Ka", "ter"] },
+        { word: "Ritter", syls: ["Rit", "ter"] }
+      ]
     };
 
-    if (mapCV[t]) {
-      return mapCV[t];
+    /* ================= KARTENFARBEN (Exakte Reihenfolge) ================= */
+    // 1. Rot, 2. Grün, 3. Blau, 4. Gelb
+    const CARD_COLORS = [
+      { bg: "bg-red-50", text: "text-red-950", border: "border-red-300" },       // 1. Karte: Rot
+      { bg: "bg-emerald-50", text: "text-emerald-950", border: "border-emerald-300" }, // 2. Karte: Grün
+      { bg: "bg-blue-50", text: "text-blue-950", border: "border-blue-300" },     // 3. Karte: Blau
+      { bg: "bg-amber-50", text: "text-amber-950", border: "border-amber-300" }   // 4. Karte: Gelb
+    ];
+
+    let currentLevel = 1;
+    let cardCount = 3;
+    let currentDisplayedItems = [];
+    let isAnimating = false;
+
+    window.onload = function() {
+      renderLetterToggles();
+      updateLevelUI();
+      updateCardCountUI();
+      nextSyllableSet();
+    };
+
+    function showScreen(screenId) {
+      document.getElementById('screen-game').classList.add('hidden');
+      document.getElementById('screen-teacher').classList.add('hidden');
+      document.getElementById(`screen-${screenId}`).classList.remove('hidden');
     }
 
-    if (/^[BCDFGHJKLMNPQRSTVWXYZ][AEIOU]$/.test(t)) {
-      const c = t.charAt(0).toLowerCase();
-      const v = t.charAt(1).toLowerCase();
-      return c + v + v;
-    }
+    function renderLetterToggles() {
+      const container = document.getElementById('letterToggleContainer');
+      container.innerHTML = '';
 
-    if (/^[BCDFGHJKLMNPQRSTVWXYZ][AEIOU][BCDFGHJKLMNPQRSTVWXYZ]$/.test(t)) {
-      const c1 = t.charAt(0).toLowerCase();
-      const v = t.charAt(1).toLowerCase();
-      const c2 = t.charAt(2).toLowerCase();
-      return c1 + v + c2 + c2;
-    }
-
-    return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
-  }
-
-  function pcmToWav(pcmData, sampleRate = 24000) {
-    const numChannels = 1;
-    const sampleBits = 16;
-    const buffer = new ArrayBuffer(44 + pcmData.length * 2);
-    const view = new DataView(buffer);
-
-    function writeString(offset, string) {
-      for (let i = 0; i < string.length; i++) {
-        view.setUint8(offset + i, string.charCodeAt(i));
-      }
-    }
-
-    writeString(0, 'RIFF');
-    view.setUint32(4, 36 + pcmData.length * 2, true);
-    writeString(8, 'WAVE');
-    writeString(12, 'fmt ');
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true);
-    view.setUint16(22, numChannels, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * numChannels * (sampleBits / 8), true);
-    view.setUint16(32, numChannels * (sampleBits / 8), true);
-    view.setUint16(34, sampleBits, true);
-    writeString(36, 'data');
-    view.setUint32(40, pcmData.length * 2, true);
-
-    let offset = 44;
-    for (let i = 0; i < pcmData.length; i++, offset += 2) {
-      view.setInt16(offset, pcmData[i], true);
-    }
-
-    return new Blob([buffer], { type: 'audio/wav' });
-  }
-
-  function base64ToArrayBuffer(base64) {
-    const binaryString = window.atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
-  }
-
-  async function playCurrentAudio() {
-    if (!currentTarget) return;
-
-    if (currentAudioElement) {
-      currentAudioElement.pause();
-      currentAudioElement = null;
-    }
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-
-    const mode = document.getElementById('mode-select').value;
-    if (mode === 'teacher') return;
-
-    const engineSelect = document.getElementById('engine-select');
-    const selectedEngine = engineSelect ? engineSelect.value : 'gemini';
-
-    if (selectedEngine === 'gemini') {
-      await playGeminiAudio(currentTarget);
-    } else {
-      playWebSpeechAudio(currentTarget);
-    }
-  }
-
-  async function playGeminiAudio(text) {
-    if (audioCache.has(text)) {
-      setAudioStatus("🔊 Spricht...");
-      const audioUrl = audioCache.get(text);
-      const audio = new Audio(audioUrl);
-      currentAudioElement = audio;
-      audio.onended = () => setAudioStatus("");
-      audio.onerror = () => setAudioStatus("");
-      audio.play();
-      return;
-    }
-
-    setAudioStatus("⏳ Lade KI-Stimme...");
-
-    try {
-      const apiKey = "";
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
-
-      const phoneticHint = getPhoneticGermanText(text);
-      const promptText = `Lies als freundliche deutsche Grundschullehrerin die Silbe "${text}" (ausgesprochen wie "${phoneticHint}") als ein einziges zusammenhängendes Wort vor. WICHTIGE REGEL: Buchstabiere NIEMALS ("nicht M-A") und lies es NIEMALS als Abkürzung oder auf Englisch vor.`;
-
-      const payload = {
-        contents: [{ parts: [{ text: promptText }] }],
-        generationConfig: {
-          responseModalities: ["AUDIO"],
-          speechConfig: {
-            voiceConfig: {
-              prebuiltVoiceConfig: { voiceName: "Aoede" }
-            }
-          }
-        }
-      };
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+      TEACHING_LETTERS.forEach(item => {
+        const isActive = activeLetters.has(item.id);
+        const btn = document.createElement('button');
+        btn.className = `px-3 py-1.5 rounded-lg text-xs font-medium font-grundschrift transition border flex items-center gap-1.5 ${
+          isActive 
+            ? 'bg-emerald-950/60 text-emerald-200/80 border-emerald-800/40' 
+            : 'bg-[#030704] text-emerald-600/40 border-emerald-950/30'
+        }`;
+        btn.innerHTML = `${item.label} ${isActive ? '✓' : ''}`;
+        btn.onclick = () => toggleLetter(item.id);
+        container.appendChild(btn);
       });
 
-      const result = await response.json();
-      const candidatePart = result?.candidates?.[0]?.content?.parts?.[0];
-      const audioDataBase64 = candidatePart?.inlineData?.data;
-      const mimeType = candidatePart?.inlineData?.mimeType;
+      document.getElementById('activeLettersCountInfo').textContent = `${activeLetters.size} Laute aktiv`;
+    }
 
-      if (audioDataBase64) {
-        let sampleRate = 24000;
-        if (mimeType && mimeType.includes('rate=')) {
-          const match = mimeType.match(/rate=(\d+)/);
-          if (match) sampleRate = parseInt(match[1], 10);
+    function toggleLetter(char) {
+      if (activeLetters.has(char)) {
+        if (activeLetters.size <= 2) {
+          return;
         }
-
-        const pcmBuffer = base64ToArrayBuffer(audioDataBase64);
-        const pcm16Data = new Int16Array(pcmBuffer);
-        const wavBlob = pcmToWav(pcm16Data, sampleRate);
-        const audioUrl = URL.createObjectURL(wavBlob);
-
-        audioCache.set(text, audioUrl);
-
-        setAudioStatus("🔊 Spricht...");
-        const audio = new Audio(audioUrl);
-        currentAudioElement = audio;
-        audio.onended = () => setAudioStatus("");
-        audio.onerror = () => setAudioStatus("");
-        audio.play();
+        activeLetters.delete(char);
       } else {
-        throw new Error("Kein Audio von KI-Dienst empfangen.");
+        activeLetters.add(char);
       }
-    } catch (err) {
-      console.warn("Gemini TTS Ausweichreaktion:", err);
-      playWebSpeechAudio(text);
-    }
-  }
-
-  function playWebSpeechAudio(text) {
-    if (!('speechSynthesis' in window)) {
-      setAudioStatus("Sprachausgabe im Browser nicht unterstützt.");
-      return;
+      renderLetterToggles();
+      nextSyllableSet();
     }
 
-    setAudioStatus("🔊 Spricht (Browser)...");
-
-    setTimeout(() => {
-      const phoneticText = getPhoneticGermanText(text);
-      const utterance = new SpeechSynthesisUtterance(phoneticText);
-      utterance.lang = 'de-DE';
-
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
+    function selectAllLetters(enable) {
+      if (enable) {
+        TEACHING_LETTERS.forEach(l => activeLetters.add(l.id));
+      } else {
+        activeLetters.clear();
+        activeLetters.add('l');
+        activeLetters.add('a');
       }
-
-      utterance.rate = 0.7;
-
-      utterance.onend = () => setAudioStatus("");
-      utterance.onerror = () => setAudioStatus("");
-
-      window.speechSynthesis.speak(utterance);
-    }, 50);
-  }
-
-  function setAudioStatus(msg) {
-    document.getElementById('audio-status').innerText = msg;
-  }
-
-  function getActiveLetters() {
-    const checkboxes = document.querySelectorAll('.letter-checkbox');
-    const active = [];
-    checkboxes.forEach(cb => {
-      if (cb.checked) active.push(cb.value);
-    });
-    return active.length > 0 ? active : ['M', 'A', 'L', 'O'];
-  }
-
-  function formatTextCasing(text) {
-    const casing = document.getElementById('casing-select').value;
-    if (casing === 'upper') return text.toUpperCase();
-    if (casing === 'lower') return text.toLowerCase();
-    if (casing === 'title') return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    if (casing === 'random') {
-      return Math.random() > 0.5 ? text.toUpperCase() : text.toLowerCase();
+      renderLetterToggles();
+      nextSyllableSet();
     }
-    return text;
-  }
 
-  function generateOptions() {
-    const level = document.getElementById('level-select').value;
-    const activeLetters = getActiveLetters();
-    const vowels = activeLetters.filter(l => ['A', 'O', 'E', 'I', 'U', 'Ä', 'Ö', 'Ü', 'AU', 'EI', 'EU'].includes(l));
-    const consonants = activeLetters.filter(l => !['A', 'O', 'E', 'I', 'U', 'Ä', 'Ö', 'Ü', 'AU', 'EI', 'EU'].includes(l));
+    function setLevel(lvl) {
+      currentLevel = lvl;
+      updateLevelUI();
+      nextSyllableSet();
+    }
 
-    const useVowels = vowels.length > 0 ? vowels : ['A', 'O'];
-    const useConsonants = consonants.length > 0 ? consonants : ['M', 'L'];
+    function updateLevelUI() {
+      const titles = {
+        1: "Level 1: 2 Laute",
+        2: "Level 2: 3 Laute",
+        3: "Level 3: 1-silbige Wörter",
+        4: "Level 4: 2-silbige Wörter"
+      };
+      document.getElementById('levelBadge').textContent = titles[currentLevel];
 
-    let items = [];
+      [1, 2, 3, 4].forEach(n => {
+        const btn = document.getElementById(`levelBtn_${n}`);
+        if (n === currentLevel) {
+          btn.className = "p-3 rounded-xl border bg-emerald-950/60 border-emerald-700/50 text-emerald-200 font-medium text-xs";
+        } else {
+          btn.className = "p-3 rounded-xl border bg-[#030704] border-emerald-950/30 text-emerald-500/50 font-normal hover:border-emerald-900/40 text-xs";
+        }
+      });
+    }
 
-    if (level === "1") {
-      for (let c of useConsonants) {
-        for (let v of useVowels) {
-          items.push(c + v);
+    function setCardCount(count) {
+      cardCount = count;
+      updateCardCountUI();
+      nextSyllableSet();
+    }
+
+    function updateCardCountUI() {
+      [2, 3, 4].forEach(n => {
+        const btn = document.getElementById(`cardCountBtn_${n}`);
+        if (n === cardCount) {
+          btn.className = "py-2.5 rounded-xl border border-emerald-700/50 bg-emerald-950/60 text-emerald-200 font-medium text-center text-xs";
+        } else {
+          btn.className = "py-2.5 rounded-xl border border-emerald-950/30 bg-[#030704] text-emerald-500/50 text-center text-xs hover:border-emerald-900/40";
+        }
+      });
+    }
+
+    function isSyllableValid(str) {
+      const cleaned = str.toLowerCase().replace(/[^a-z]/g, '');
+      for (let char of cleaned) {
+        if (!activeLetters.has(char)) {
+          return false;
         }
       }
-    } else if (level === "2") {
-      for (let c1 of useConsonants) {
-        for (let v of useVowels) {
-          for (let c2 of useConsonants) {
-            items.push(c1 + v + c2);
+      return true;
+    }
+
+    function getDataForCurrentLevel() {
+      let pool = [];
+
+      if (currentLevel === 1) {
+        pool = SYLLABLE_DATABASE.level1.filter(isSyllableValid);
+        let result = [];
+        for (let i = 0; i < cardCount; i++) {
+          if (pool.length > 0) {
+            result.push({ type: 'simple', text: pool[Math.floor(Math.random() * pool.length)] });
           }
         }
+        return result;
+      } else if (currentLevel === 2) {
+        pool = SYLLABLE_DATABASE.level2.filter(isSyllableValid);
+        let result = [];
+        for (let i = 0; i < cardCount; i++) {
+          if (pool.length > 0) {
+            result.push({ type: 'simple', text: pool[Math.floor(Math.random() * pool.length)] });
+          }
+        }
+        return result;
+      } else if (currentLevel === 3) {
+        pool = SYLLABLE_DATABASE.level3.filter(isSyllableValid);
+        let result = [];
+        for (let i = 0; i < cardCount; i++) {
+          if (pool.length > 0) {
+            result.push({ type: 'simple', text: pool[Math.floor(Math.random() * pool.length)] });
+          }
+        }
+        return result;
+      } else if (currentLevel === 4) {
+        const validWords = SYLLABLE_DATABASE.level4.filter(item => isSyllableValid(item.word));
+        let result = [];
+        for (let i = 0; i < cardCount; i++) {
+          if (validWords.length > 0) {
+            const chosen = validWords[Math.floor(Math.random() * validWords.length)];
+            result.push({ type: 'colored', syls: chosen.syls });
+          }
+        }
+        return result;
       }
-    } else if (level === "3") {
-      items = WORD_DATABASE_LEVEL3;
-    } else if (level === "4") {
-      items = WORD_DATABASE_LEVEL4;
+      return [];
     }
 
-    if (items.length < 3) {
-      items = ['MA', 'LA', 'MO', 'SO', 'TA', 'PA'];
+    function nextSyllableSetWithAnimation() {
+      if (isAnimating) return;
+      isAnimating = true;
+
+      const container = document.getElementById('syllablesGrid');
+      const cards = container.children;
+
+      // 1. Drehe aktuelle Karten weg (Flip Out)
+      Array.from(cards).forEach(card => {
+        card.classList.add('flip-out');
+      });
+
+      // Nach kurzer Zeit Daten wechseln und Karten neu einblenden (Flip In)
+      setTimeout(() => {
+        currentDisplayedItems = getDataForCurrentLevel();
+        renderSyllablesGrid();
+
+        const newCards = container.children;
+        Array.from(newCards).forEach(card => {
+          card.classList.add('flip-out');
+          // Frame Verzögerung für sauberes Rendern
+          setTimeout(() => {
+            card.classList.remove('flip-out');
+            card.classList.add('flip-in');
+          }, 20);
+        });
+
+        setTimeout(() => {
+          isAnimating = false;
+        }, 350);
+      }, 180);
     }
 
-    // Pick 3 unique items
-    const shuffled = [...items].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 3);
-    currentTarget = selected[Math.floor(Math.random() * selected.length)];
-    currentOptions = selected;
-  }
-
-  function startNewRound() {
-    generateOptions();
-    document.getElementById('feedback-text').innerText = "";
-    
-    const repeatBtn = document.getElementById('repeat-audio-btn');
-    const mode = document.getElementById('mode-select').value;
-    if (mode === 'teacher') {
-      repeatBtn.style.display = 'none';
-      setAudioStatus("Lehrermodus: Lesen Sie das geforderte Wort laut vor.");
-    } else {
-      repeatBtn.style.display = 'inline-flex';
-      setAudioStatus("");
-      playCurrentAudio();
+    function nextSyllableSet() {
+      currentDisplayedItems = getDataForCurrentLevel();
+      renderSyllablesGrid();
     }
 
-    renderCards();
-  }
+    function renderSyllablesGrid() {
+      const container = document.getElementById('syllablesGrid');
+      container.innerHTML = '';
 
-  function renderCards() {
-    const container = document.getElementById('cards-container');
-    container.innerHTML = "";
+      if (currentDisplayedItems.length === 2) {
+        container.className = "grid grid-cols-1 sm:grid-cols-2 gap-6 min-h-[300px] items-stretch";
+      } else if (currentDisplayedItems.length === 3) {
+        container.className = "grid grid-cols-1 sm:grid-cols-3 gap-6 min-h-[300px] items-stretch";
+      } else {
+        container.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-h-[300px] items-stretch";
+      }
 
-    const fontClass = document.getElementById('font-select').value;
+      currentDisplayedItems.forEach((item, index) => {
+        // Exakte Farbfolge: 1. Rot, 2. Grün, 3. Blau, 4. Gelb
+        const color = CARD_COLORS[index % CARD_COLORS.length];
+        
+        const card = document.createElement('div');
+        card.className = `syllable-card ${color.bg} ${color.border} border-2 rounded-2xl p-8 flex flex-col justify-center items-center text-center shadow-sm min-h-[240px]`;
+        
+        if (item.type === 'simple') {
+          card.innerHTML = `
+            <span class="font-grundschrift text-6xl sm:text-7xl font-normal tracking-wide ${color.text}">
+              ${item.text}
+            </span>
+          `;
+        } else if (item.type === 'colored') {
+          // Level 4: 1. Silbe Blau, 2. Silbe Rot
+          card.innerHTML = `
+            <span class="font-grundschrift text-5xl sm:text-6xl font-normal tracking-wide">
+              <span class="text-blue-600">${item.syls[0]}</span><span class="text-rose-600">${item.syls[1]}</span>
+            </span>
+          `;
+        }
 
-    currentOptions.forEach((opt, idx) => {
-      const card = document.createElement('div');
-      card.className = `card card-${idx} ${fontClass}`;
-      card.innerText = formatTextCasing(opt);
-      card.onclick = () => checkAnswer(opt);
-      container.appendChild(card);
-    });
-  }
-
-  function checkAnswer(selectedText) {
-    const mode = document.getElementById('mode-select').value;
-    const feedback = document.getElementById('feedback-text');
-
-    if (mode === 'teacher') {
-      feedback.style.color = "#2c3e50";
-      feedback.innerText = `Gelesen: "${formatTextCasing(selectedText)}"`;
-      return;
+        container.appendChild(card);
+      });
     }
-
-    if (selectedText === currentTarget) {
-      feedback.style.color = "#27ae60";
-      feedback.innerText = "⭐ 🎉 ⭐";
-    } else {
-      feedback.style.color = "#e74c3c";
-      feedback.innerText = "❌";
-    }
-  }
-
-  function updateCardFonts() {
-    renderCards();
-  }
-
-  function toggleSettings() {
-    const section = document.getElementById('settings-section');
-    const icon = document.getElementById('settings-toggle-icon');
-    section.classList.toggle('open');
-    icon.innerText = section.classList.contains('open') ? '▲' : '▼';
-  }
-
-  function toggleEngineUI() {
-    const engine = document.getElementById('engine-select').value;
-    const voiceGroup = document.getElementById('voice-group');
-    if (engine === 'webspeech') {
-      voiceGroup.style.display = 'block';
-    } else {
-      voiceGroup.style.display = 'none';
-    }
-  }
-
-  function applyProgression(stepIdx) {
-    const step = PROGRESSION_STEPS[stepIdx];
-    if (!step) return;
-
-    const checkboxes = document.querySelectorAll('.letter-checkbox');
-    checkboxes.forEach(cb => {
-      cb.checked = step.letters.includes(cb.value);
-      const labelBtn = cb.closest('.letter-btn');
-      if (cb.checked) labelBtn.classList.add('active');
-      else labelBtn.classList.remove('active');
-    });
-
-    startNewRound();
-  }
-
-  function initUI() {
-    // Populate progression select
-    const progSelect = document.getElementById('progression-select');
-    progSelect.innerHTML = "";
-    PROGRESSION_STEPS.forEach((step, idx) => {
-      const opt = document.createElement('option');
-      opt.value = idx;
-      opt.innerText = step.label;
-      progSelect.appendChild(opt);
-    });
-
-    // Populate letter checkboxes grid
-    const lettersContainer = document.getElementById('letters-container');
-    lettersContainer.innerHTML = "";
-    ALL_LETTERS.forEach(l => {
-      const label = document.createElement('label');
-      label.className = `letter-btn ${['M', 'A', 'L', 'O'].includes(l) ? 'active' : ''}`;
-      
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.value = l;
-      cb.className = 'letter-checkbox';
-      cb.checked = ['M', 'A', 'L', 'O'].includes(l);
-      cb.onchange = () => {
-        if (cb.checked) label.classList.add('active');
-        else label.classList.remove('active');
-        startNewRound();
-      };
-
-      label.appendChild(cb);
-      label.appendChild(document.createTextNode(l));
-      lettersContainer.appendChild(label);
-    });
-  }
-
-  function initVoices() {
-    if (!('speechSynthesis' in window)) return;
-    
-    voices = window.speechSynthesis.getVoices();
-    availableVoices = voices.filter(v => v.lang.startsWith('de'));
-
-    const voiceSelect = document.getElementById('voice-select');
-    if (!voiceSelect) return;
-    voiceSelect.innerHTML = "";
-
-    if (availableVoices.length === 0) {
-      const opt = document.createElement('option');
-      opt.value = "";
-      opt.innerText = "Standard Deutsch (Browser)";
-      voiceSelect.appendChild(opt);
-      return;
-    }
-
-    availableVoices.forEach((v, idx) => {
-      const opt = document.createElement('option');
-      opt.value = idx;
-      opt.innerText = `${v.name} (${v.lang})`;
-      voiceSelect.appendChild(opt);
-    });
-
-    selectedVoice = availableVoices[0];
-  }
-
-  function updateSelectedVoice() {
-    const idx = document.getElementById('voice-select').value;
-    if (availableVoices[idx]) {
-      selectedVoice = availableVoices[idx];
-    }
-  }
-
-  window.onload = () => {
-    initUI();
-    initVoices();
-
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = () => {
-        initVoices();
-      };
-    }
-
-    startNewRound();
-  };
-</script>
-
+  </script>
 </body>
 </html>
