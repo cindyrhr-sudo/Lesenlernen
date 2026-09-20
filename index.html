@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="de" class="h-full bg-[#030704] text-emerald-100/50">
 <head>
   <meta charset="UTF-8">
@@ -8,7 +7,7 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Google Fonts: Playwrite DE Grund & Andika -->
+  <!-- Google Fonts: Playwrite DE Grund (Echte deutsche Grundschrift) & Andika -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400&family=Playwrite+DE+Grund:wght@100..400&display=swap" rel="stylesheet">
@@ -26,19 +25,14 @@
   </script>
 
   <style>
-    /* Globales Erzwingen der Grundschrift für die gesamte Applikation */
-    body, button, input, select, textarea, span, div {
-      font-family: 'Playwrite DE Grund', 'Andika', cursive, sans-serif !important;
-    }
-
     body {
+      font-family: 'Andika', sans-serif;
       user-select: none;
       -webkit-user-select: none;
       background-color: #030704;
     }
-    
     .font-grundschrift {
-      font-family: 'Playwrite DE Grund', 'Andika', cursive, sans-serif !important;
+      font-family: 'Playwrite DE Grund', 'Andika', cursive, sans-serif;
       font-weight: 400;
     }
     
@@ -63,11 +57,11 @@
   <header class="bg-[#050c07]/50 border-b border-emerald-950/40 px-6 py-3 sticky top-0 z-50">
     <div class="max-w-5xl mx-auto flex justify-between items-center">
       <div class="flex items-center gap-3 cursor-pointer opacity-70 hover:opacity-100 transition" onclick="showScreen('game')">
-        <div class="bg-emerald-950/40 text-emerald-200/50 w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm border border-emerald-900/30">
+        <div class="bg-emerald-950/40 text-emerald-200/50 w-8 h-8 rounded-lg flex items-center justify-center font-bold font-grundschrift text-sm border border-emerald-900/30">
           Aa
         </div>
         <div>
-          <h1 class="text-sm font-bold text-emerald-200/50">
+          <h1 class="text-sm font-bold text-emerald-200/50 font-grundschrift">
             Silben-Studio
           </h1>
           <p class="text-[10px] text-emerald-400/30 font-medium">Grundschrift</p>
@@ -99,7 +93,7 @@
             </span>
           </div>
 
-          <!-- Weiter-Button -->
+          <!-- Weiter-Button: Unauffällig auf Beamer, gut bedienbar auf Tablet -->
           <button onclick="nextSyllableSetWithAnimation()" class="px-5 py-2 bg-emerald-950/50 hover:bg-emerald-900/60 text-emerald-200/60 hover:text-emerald-200 font-medium rounded-xl text-xs transition flex items-center gap-2 border border-emerald-800/30 shadow-sm">
             Nächste Karten ➔
           </button>
@@ -107,7 +101,7 @@
 
         <!-- Silbenkarten Grid -->
         <div id="syllablesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-h-[320px] items-stretch">
-          <!-- Dynamisch erzeugte Karten -->
+          <!-- Dynamisch erzeugte Grundschrift-Karten -->
         </div>
 
       </section>
@@ -165,8 +159,8 @@
               <span class="text-[10px] text-emerald-500/40">Echte Wörter (z.B. Mop, Arm, Mut)</span>
             </button>
             <button onclick="setLevel(5)" id="levelBtn_5" class="p-3 rounded-xl border text-left transition flex flex-col justify-between text-xs sm:col-span-2">
-              <span class="font-medium block text-emerald-200/80">Level 5: 2-silbige Wörter</span>
-              <span class="text-[10px] text-emerald-500/40">In Farbsilben (z.B. La-ma, Lu-pe)</span>
+              <span class="font-medium block text-emerald-200/80">Level 5: 2- & 3-silbige Wörter</span>
+              <span class="text-[10px] text-emerald-500/40">In Farbsilben (z.B. La-ma, Ra-ke-te)</span>
             </button>
           </div>
         </div>
@@ -187,12 +181,12 @@
   </main>
 
   <!-- Footer -->
-  <footer class="bg-[#050c07]/30 border-t border-emerald-950/20 p-2.5 text-center text-[10px] text-emerald-600/30">
+  <footer class="bg-[#050c07]/30 border-t border-emerald-950/20 p-2.5 text-center text-[10px] text-emerald-600/30 font-grundschrift">
     Silben-Studio • Reizarmes Design in Grundschrift • 100% Offline-Fähig
   </footer>
 
   <script>
-    /* ================= LAUTE NACH LEHRWERK ================= */
+    /* ================= STREAMING_CHUNK: Initializing data structures and state ================= */
     const TEACHING_LETTERS = [
       { id: 'l', label: 'L / l' },
       { id: 'a', label: 'A / a' },
@@ -274,12 +268,12 @@
       ]
     };
 
-    /* ================= KARTENFARBEN ================= */
+    /* ================= KARTENFARBEN (Exakte Reihenfolge) ================= */
     const CARD_COLORS = [
-      { bg: "bg-red-50", text: "text-red-900", border: "border-red-300" },       
-      { bg: "bg-emerald-50", text: "text-emerald-900", border: "border-emerald-300" }, 
-      { bg: "bg-blue-50", text: "text-blue-900", border: "border-blue-300" },     
-      { bg: "bg-amber-50", text: "text-amber-900", border: "border-amber-300" }   
+      { bg: "bg-red-50", text: "text-red-950", border: "border-red-300" },       // 1. Karte: Rot
+      { bg: "bg-emerald-50", text: "text-emerald-950", border: "border-emerald-300" }, // 2. Karte: Grün
+      { bg: "bg-blue-50", text: "text-blue-950", border: "border-blue-300" },      // 3. Karte: Blau
+      { bg: "bg-amber-50", text: "text-amber-950", border: "border-amber-300" }    // 4. Karte: Gelb
     ];
 
     let currentLevel = 1;
@@ -307,7 +301,7 @@
       TEACHING_LETTERS.forEach(item => {
         const isActive = activeLetters.has(item.id);
         const btn = document.createElement('button');
-        btn.className = `px-3 py-1.5 rounded-lg text-xs font-medium transition border flex items-center gap-1.5 ${
+        btn.className = `px-3 py-1.5 rounded-lg text-xs font-medium font-grundschrift transition border flex items-center gap-1.5 ${
           isActive 
             ? 'bg-emerald-950/60 text-emerald-200/80 border-emerald-800/40' 
             : 'bg-[#030704] text-emerald-600/40 border-emerald-950/30'
@@ -322,7 +316,9 @@
 
     function toggleLetter(char) {
       if (activeLetters.has(char)) {
-        if (activeLetters.size <= 2) return;
+        if (activeLetters.size <= 2) {
+          return;
+        }
         activeLetters.delete(char);
       } else {
         activeLetters.add(char);
@@ -355,7 +351,7 @@
         2: "Level 2: 2 Laute (Gemischt)",
         3: "Level 3: 3 Laute",
         4: "Level 4: 1-silbige Wörter",
-        5: "Level 5: 2-silbige Wörter"
+        5: "Level 5: 2- & 3-silbige Wörter"
       };
       document.getElementById('levelBadge').textContent = titles[currentLevel];
 
@@ -389,7 +385,9 @@
     function isSyllableValid(str) {
       const cleaned = str.toLowerCase().replace(/[^a-z]/g, '');
       for (let char of cleaned) {
-        if (!activeLetters.has(char)) return false;
+        if (!activeLetters.has(char)) {
+          return false;
+        }
       }
       return true;
     }
@@ -401,28 +399,36 @@
         pool = SYLLABLE_DATABASE.level1.filter(isSyllableValid);
         let result = [];
         for (let i = 0; i < cardCount; i++) {
-          if (pool.length > 0) result.push({ type: 'simple', text: pool[Math.floor(Math.random() * pool.length)] });
+          if (pool.length > 0) {
+            result.push({ type: 'simple', text: pool[Math.floor(Math.random() * pool.length)] });
+          }
         }
         return result;
       } else if (currentLevel === 2) {
         pool = SYLLABLE_DATABASE.level2.filter(isSyllableValid);
         let result = [];
         for (let i = 0; i < cardCount; i++) {
-          if (pool.length > 0) result.push({ type: 'simple', text: pool[Math.floor(Math.random() * pool.length)] });
+          if (pool.length > 0) {
+            result.push({ type: 'simple', text: pool[Math.floor(Math.random() * pool.length)] });
+          }
         }
         return result;
       } else if (currentLevel === 3) {
         pool = SYLLABLE_DATABASE.level3.filter(isSyllableValid);
         let result = [];
         for (let i = 0; i < cardCount; i++) {
-          if (pool.length > 0) result.push({ type: 'simple', text: pool[Math.floor(Math.random() * pool.length)] });
+          if (pool.length > 0) {
+            result.push({ type: 'simple', text: pool[Math.floor(Math.random() * pool.length)] });
+          }
         }
         return result;
       } else if (currentLevel === 4) {
         pool = SYLLABLE_DATABASE.level4.filter(isSyllableValid);
         let result = [];
         for (let i = 0; i < cardCount; i++) {
-          if (pool.length > 0) result.push({ type: 'simple', text: pool[Math.floor(Math.random() * pool.length)] });
+          if (pool.length > 0) {
+            result.push({ type: 'simple', text: pool[Math.floor(Math.random() * pool.length)] });
+          }
         }
         return result;
       } else if (currentLevel === 5) {
@@ -446,7 +452,9 @@
       const container = document.getElementById('syllablesGrid');
       const cards = container.children;
 
-      Array.from(cards).forEach(card => card.classList.add('flip-out'));
+      Array.from(cards).forEach(card => {
+        card.classList.add('flip-out');
+      });
 
       setTimeout(() => {
         currentDisplayedItems = getDataForCurrentLevel();
@@ -461,7 +469,9 @@
           }, 20);
         });
 
-        setTimeout(() => { isAnimating = false; }, 350);
+        setTimeout(() => {
+          isAnimating = false;
+        }, 350);
       }, 180);
     }
 
@@ -490,14 +500,20 @@
         
         if (item.type === 'simple') {
           card.innerHTML = `
-            <span class="text-6xl sm:text-7xl font-normal tracking-wide ${color.text}">
+            <span class="font-grundschrift text-6xl sm:text-7xl font-normal tracking-wide ${color.text}">
               ${item.text}
             </span>
           `;
         } else if (item.type === 'colored') {
+          let sylHTML = '';
+          item.syls.forEach((syl, sIdx) => {
+            const sylColor = (sIdx % 2 === 0) ? 'text-blue-600' : 'text-rose-600';
+            sylHTML += `<span class="${sylColor}">${syl}</span>`;
+          });
+
           card.innerHTML = `
-            <span class="text-5xl sm:text-6xl font-normal tracking-wide">
-              <span class="text-blue-600">${item.syls[0]}</span><span class="text-rose-600">${item.syls[1]}</span>
+            <span class="font-grundschrift text-4xl sm:text-5xl font-normal tracking-wide">
+              ${sylHTML}
             </span>
           `;
         }
