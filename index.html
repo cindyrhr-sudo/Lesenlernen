@@ -100,7 +100,7 @@
           </button>
         </div>
 
-        <!-- Silbenkarten Grid (Karten selbst bleiben hell und kontrastreich für Kinder) -->
+        <!-- Silbenkarten Grid -->
         <div id="syllablesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-h-[320px] items-stretch">
           <!-- Dynamisch erzeugte Grundschrift-Karten -->
         </div>
@@ -209,43 +209,63 @@
         "la", "ma", "mo", "lo", "pe", "po", "so", "se", "na", "ne", "ni", "no", 
         "ti", "to", "ta", "te", "ra", "ro", "re", "ri", "ka", "ko", "ke", "du", 
         "da", "do", "de", "di", "lu", "mu", "pu", "su", "nu", "tu", "ru", "ku",
-        "al", "am", "an", "as", "at", "ar", "el", "em", "en", "es", "er", "in", "is", "it", "or", "um"
+        "mi", "pi", "si", "li",
+        "al", "am", "an", "as", "at", "ar", "el", "em", "en", "es", "er", "in", 
+        "is", "it", "or", "um", "ol", "ap", "op", "up", "ep", "ad", "ed", "id", 
+        "od", "ud", "ak", "ok", "uk", "ek"
       ],
       level2: [
-        "lam", "mam", "pos", "ros", "man", "ter", "kam", "den", "min", "res", 
-        "pur", "lan", "mop", "rot", "kar", "kur", "sen", "sam", "tas",
-        "per", "mor", "lin", "ren", "dem", "aus"
+        "lam", "mal", "man", "tam", "mat", "pan", "nap", "kan", "nak", "sar",
+        "ras", "ram", "mar", "tan", "nat", "sal", "las", "mop", "pom", "rot",
+        "tor", "min", "nim", "sen", "nes", "ren", "ner", "ler", "rel", "ter",
+        "ret", "dem", "med", "sam", "lip", "pil", "pam", "map", "ton", "not", 
+        "den", "ned", "dor", "rod", "sur", "rus", "tus", "sut"
       ],
       level3: [
-        "Mop", "Arm", "Mut", "Ton", "Ost", "Sohn", "Kamm", "Pass", "Ast", "Ohr",
-        "Rot", "Dom", "Kran", "Kuss", "Ruck", "Tor", "Tee", "See", "Rast", "Mund",
-        "Kind", "Pate", "Rost", "Dorn", "Korn", "Park"
+        "Mop", "Arm", "Mut", "Ton", "Kamm", "Pass", "Rot", "Dom", "Kuss", "Ruck", 
+        "Tor", "Tee", "See", "Rast", "Mund", "Kind", "Pate", "Darm", "Mal", "Samt", 
+        "Pott", "Land", "Dank", "Puls", "Moor", "Lied", "Kern", "Dorn"
       ],
       level4: [
         { word: "Lama", syls: ["La", "ma"] },
         { word: "Oma", syls: ["O", "ma"] },
-        { word: "Lupe", syls: ["Lu", "pe"] },
+        { word: "Opa", syls: ["O", "pa"] },
+        { word: "Dino", syls: ["Di", "no"] },
+        { word: "Kamel", syls: ["Ka", "mel"] },
+        { word: "Kater", syls: ["Ka", "ter"] },
+        { word: "Rabe", syls: ["Ra", "be"] },
+        { word: "Puma", syls: ["Pu", "ma"] },
         { word: "Rose", syls: ["Ro", "se"] },
         { word: "Dose", syls: ["Do", "se"] },
         { word: "Sonne", syls: ["Son", "ne"] },
+        { word: "Palme", syls: ["Pal", "me"] },
+        { word: "Kondor", syls: ["Kon", "dor"] },
+        { word: "Lupe", syls: ["Lu", "pe"] },
         { word: "Motor", syls: ["Mo", "tor"] },
-        { word: "Rakete", syls: ["Ra", "ke"] },
-        { word: "Kamel", syls: ["Ka", "mel"] },
+        { word: "Rakete", syls: ["Ra", "ke", "te"] },
         { word: "Suppe", syls: ["Sup", "pe"] },
         { word: "Tasse", syls: ["Tas", "se"] },
         { word: "Karton", syls: ["Kar", "ton"] },
-        { word: "Kater", syls: ["Ka", "ter"] },
-        { word: "Ritter", syls: ["Rit", "ter"] }
+        { word: "Ritter", syls: ["Rit", "ter"] },
+        { word: "Lampe", syls: ["Lam", "pe"] },
+        { word: "Mappe", syls: ["Map", "pe"] },
+        { word: "Kanne", syls: ["Kan", "ne"] },
+        { word: "Pirat", syls: ["Pi", "rat"] },
+        { word: "Tante", syls: ["Tan", "te"] },
+        { word: "Paket", syls: ["Pa", "ket"] },
+        { word: "Puppe", syls: ["Pup", "pe"] },
+        { word: "Melone", syls: ["Me", "lo", "ne"] },
+        { word: "Tomate", syls: ["To", "ma", "te"] }
       ]
     };
 
     /* ================= KARTENFARBEN (Exakte Reihenfolge) ================= */
     // 1. Rot, 2. Grün, 3. Blau, 4. Gelb
     const CARD_COLORS = [
-      { bg: "bg-red-50", text: "text-red-950", border: "border-red-300" },       // 1. Karte: Rot
-      { bg: "bg-emerald-50", text: "text-emerald-950", border: "border-emerald-300" }, // 2. Karte: Grün
-      { bg: "bg-blue-50", text: "text-blue-950", border: "border-blue-300" },     // 3. Karte: Blau
-      { bg: "bg-amber-50", text: "text-amber-950", border: "border-amber-300" }   // 4. Karte: Gelb
+      { bg: "bg-red-50", text: "text-red-900", border: "border-red-300" },       // 1. Karte: Rot
+      { bg: "bg-emerald-50", text: "text-emerald-900", border: "border-emerald-300" }, // 2. Karte: Grün
+      { bg: "bg-blue-50", text: "text-blue-900", border: "border-blue-300" },     // 3. Karte: Blau
+      { bg: "bg-amber-50", text: "text-amber-900", border: "border-amber-300" }   // 4. Karte: Gelb
     ];
 
     let currentLevel = 1;
@@ -414,12 +434,10 @@
       const container = document.getElementById('syllablesGrid');
       const cards = container.children;
 
-      // 1. Drehe aktuelle Karten weg (Flip Out)
       Array.from(cards).forEach(card => {
         card.classList.add('flip-out');
       });
 
-      // Nach kurzer Zeit Daten wechseln und Karten neu einblenden (Flip In)
       setTimeout(() => {
         currentDisplayedItems = getDataForCurrentLevel();
         renderSyllablesGrid();
@@ -427,7 +445,6 @@
         const newCards = container.children;
         Array.from(newCards).forEach(card => {
           card.classList.add('flip-out');
-          // Frame Verzögerung für sauberes Rendern
           setTimeout(() => {
             card.classList.remove('flip-out');
             card.classList.add('flip-in');
@@ -458,13 +475,13 @@
       }
 
       currentDisplayedItems.forEach((item, index) => {
-        // Exakte Farbfolge: 1. Rot, 2. Grün, 3. Blau, 4. Gelb
         const color = CARD_COLORS[index % CARD_COLORS.length];
         
         const card = document.createElement('div');
         card.className = `syllable-card ${color.bg} ${color.border} border-2 rounded-2xl p-8 flex flex-col justify-center items-center text-center shadow-sm min-h-[240px]`;
         
         if (item.type === 'simple') {
+          // Level 1-3: Buchstaben übernehmen exakt die Textfarbe der jeweiligen Karte
           card.innerHTML = `
             <span class="font-grundschrift text-6xl sm:text-7xl font-normal tracking-wide ${color.text}">
               ${item.text}
